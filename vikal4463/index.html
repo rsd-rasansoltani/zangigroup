@@ -22,6 +22,7 @@
     -webkit-print-color-adjust:exact;
     direction:rtl;
     padding:24px;
+    position:relative;
   }
   .frame{
     max-width:900px;
@@ -31,6 +32,8 @@
     box-shadow:0 14px 40px rgba(11,18,32,0.08);
     padding:28px;
     border-top:9px solid var(--accent);
+    position:relative;
+    z-index:2;
   }
   header{display:flex;gap:18px;align-items:center;justify-content:space-between}
   .logo{
@@ -59,15 +62,65 @@
   .btn{padding:10px 14px;border-radius:8px;border:0;font-weight:800;cursor:pointer}
   .btn.print{background:var(--accent);color:#fff}
   .btn.copy{background:#eef6ff;color:var(--accent)}
+
+  /* 🔴 مهر قرمز */
+.watermark {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) rotate(-20deg);
+  font-size: 80px;
+  font-weight: 900;
+  color: rgba(255, 0, 0, 0.795);
+  text-transform: uppercase;
+  border: 6px solid rgb(255, 0, 0);
+  padding: 40px 80px;
+  border-radius: 12px;
+  z-index: 5;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  user-select: none;
+  text-align: center;
+  white-space: nowrap; /* متن توی یه خط بمونه */
+}
+
+/* واکنش‌گرا برای موبایل */
+@media (max-width: 600px) {
+  .watermark {
+    font-size: 40px;    /* کوچیک‌تر شدن متن اصلی */
+    padding: 20px 40px; /* حاشیه کمتر */
+  }
+  .watermark h5 {
+    font-size: 12px;    /* متن ریز هم کوچیک‌تر */
+  }
+}
+
+
+  /* 🔲 لایه تار اطراف */
+  .overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.5);
+    backdrop-filter:blur(6px);
+    z-index:1;
+  }
+
   @media print{
     body{background:white;padding:0}
-    .actions{display:none}
+    .actions,.watermark,.overlay{display:none}
     .frame{box-shadow:none;border-top:6px solid #000}
   }
 </style>
 </head>
 <body>
+<div class="overlay"></div>
+<div class="watermark">
+  کان لم یکن
+  <h5>باطل و از درجه اعتبار ساقط است</h5>
+</div>
+
+
   <div class="frame" id="doc">
+    <!-- 👇 همون محتوای قبلی بدون تغییر -->
     <header>
       <div class="head-text">
         <h1>اخطار رسمی حقوقی — اعلام بطلان مطلق استناد به ادله تحصیل‌شده از طریق ضبط غیرمجاز</h1>
@@ -83,7 +136,7 @@
 
     <div class="subject">موضوع: اعلام بطلان استناد ادلهٔ ضبط‌شده و اخطار به عدم هرگونه نشر یا ارائهٔ فایل صوتی</div>
 
-    <main>
+  <main>
       <span class="lead">سرکار خانم محترم، شیرین عسکری</span>
 
       با سلام و احترام،  
@@ -105,26 +158,12 @@
         این ابلاغیه به منزلهٔ اعلام قصد قضایی و اخطار رسمی تلقی می‌گردد و میراث هرگونه تکاپو یا توسل به ادلهٔ غیرقانونی را از دید مراجع صالح سلب نخواهد نمود. خواهشمند است جهت جلوگیری از تشدید امور، فورا از هرگونه بهره‌برداری یا گردش فایل صوتی مزبور امتناع فرمایید.
       </p>
     </main>
-
-    <div class="citations" aria-hidden>
-      مستندات و یادآوری: مادهٔ ۵۸۲ قانون مجازات اسلامی؛ اصول آیین دادرسی کیفری و رویه‌های مربوط به بطلان ادله تحصیل‌شده به طرق نامشروع.
-    </div>
-
-    <div class="links">
-      <div>توضیح تکمیلی: سند تفویض وکالت و اطلاعات مربوط به نمایندگی حقوقی در:</div>
-      <div style="margin-top:6px">
-        • تحد وکالت دارایی: <a href="https://daraeinaser.ir" target="_blank" rel="noopener noreferrer">daraeinaser.ir</a><br>
-        • شرکت راسان دیزاین: <a href="https://zangigroup.ir" target="_blank" rel="noopener noreferrer">zangigroup.ir</a>
-      </div>
-    </div>
-
     <footer>
       <div class="sig">
         با احترام،<br>
         <div class="name">محمد کاظمی‌خواه</div>
         <div style="font-size:13px;color:var(--muted);margin-top:6px">نمایندهٔ حقوقی و ذی‌نفع (موضوع: تحد وکالت دارایی)</div>
       </div>
-
       <div class="seal" aria-hidden>ابلاغ رسمی</div>
     </footer>
 
@@ -135,7 +174,6 @@
   </div>
 
 <script>
-  // تاریخ امروز (قابل چاپ) — فرمت: روز/ماه/سال
   (function(){
     const d = new Date();
     const pad = n => String(n).padStart(2,'0');
